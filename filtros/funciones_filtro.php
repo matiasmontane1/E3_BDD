@@ -110,9 +110,8 @@ function agregar_id($array_con_encabezados) {
     return $array_datos_unicos;
 }
 
-function profesor($cadena1, $cadena2) {
-    $cadena_mayuscula = strtoupper($cadena1 . ' ' . $cadena2);
-    if ($cadena_mayuscula === "POR DESIGNAR" || $cadena_mayuscula === "DESIGNAR POR") {
+function profesor($cadena1) {
+    if (strlen($cadena1) < 6) {
         return "NO";
     }
     return "SI";

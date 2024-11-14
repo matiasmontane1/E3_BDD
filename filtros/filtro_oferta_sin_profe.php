@@ -26,7 +26,7 @@ foreach ($array_datos as $fila) {
     $f_i = date('Y-m-d', $timestamp);
     $fecha = explode('/', $fila[12]);
     $f_t = "20" . $fecha[2] . '-' . $fecha[1] . '-' . $fecha[0];
-    $profesor = profesor($fila[17], $fila[18]);
+    $profesor = profesor($fila[16]);
     if (in_array($sed, $sedes) && in_array($fila[4], $duracion) && in_array($jorna, $jornadas)&& $profesor == "NO") {
         $id = $id + 1;
         $ramos[] = [$id, $fila[0], $sed, $fila[2], $seccion, $fila[4], $jorna, $cupos, $inscritos, $h_i, $h_f, strtoupper($dia), $f_i, $f_t, $fila[13], $fila[14], $fila[15], $fila[16], $profesor]; 
