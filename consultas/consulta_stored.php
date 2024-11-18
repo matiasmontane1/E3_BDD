@@ -40,7 +40,7 @@
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='10'>No se encontraron datos en la vista.</td></tr>";
+                    echo "<tr><td>dNo se encontraron datos en la vista.</td></tr>";
                 }
             ?>
         </tbody>
