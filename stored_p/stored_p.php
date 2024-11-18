@@ -1,7 +1,7 @@
 <?php
 require('../config/conexion.php');
 
-$crear_sp = "
+$crear_funcion = "
 CREATE OR REPLACE FUNCTION crearVistaActa()
 RETURNS VOID AS $$
 BEGIN
@@ -20,10 +20,10 @@ END;
 $$ LANGUAGE plpgsql;
 ";
 
-$result = pg_query($db, $crear_sp);
+$result = pg_query($db, $crear_funcion);
 
 if ($result) {
-    echo "Stored Procedure creado correctamente.";
+    echo "Stored Procedure creado";
 } else {
     echo "Error al crear el Stored Procedure.";
 }

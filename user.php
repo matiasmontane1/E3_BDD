@@ -40,7 +40,7 @@ include('templates/header.html');
   </form>
 
   <h2 class="subtitle">Cargar tabla temporal acta.</h2>
-  <form class="form" action="temp_notas/transaccion.php" method="post"> 
+  <form class="form" action="consultas/consulta_stored.php" method="post"> 
     <input class="form-button" type="submit" value="Cargar">
   </form>
 
