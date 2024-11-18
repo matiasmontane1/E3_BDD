@@ -43,37 +43,3 @@ try {
 }
 
 require_once('../config/conexion.php');
-
-###############################################################################################################
-
-try {
-    // Inserta datos en la tabla notas
-    $insertar = "
-        INSERT INTO notas (id, nota) VALUES 
-        (1, 6.8), 
-        (2, 3.2), 
-        (3, 5.5);
-    ";
-
-    $db->exec($insertar);
-
-    echo "Datos insertados exitosamente.";
-
-} catch (Exception $e) {
-    echo "Error al insertar los datos: " . $e->getMessage();
-}
-
-require_once('../config/conexion.php');
-
-
-try {
-    $consulta = $db->query("SELECT * FROM notas");
-
-    // Imprimir resultados
-    foreach ($consulta as $fila) {
-        echo "ID: {$fila['id']} - Nota: {$fila['nota']} - Calificación: {$fila['calificacion']}<br>";
-    }
-
-} catch (Exception $e) {
-    echo "Error al consultar los datos: " . $e->getMessage();
-}
