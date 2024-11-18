@@ -5,13 +5,11 @@ include('../config/conexion.php');
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-$query = $db->prepare("SELECT * FROM usuario WHERE id = :id LIMIT 1");
-$query->bindParam(':id', $email);
-$query->execute();
-$user = $query->fetch();
+$query = "SELECT * FROM usuario WHERE id = '$email' LIMIT 1";
+$result = pg_query($db, $query);
+$user = pg_fetch_assoc($result);
 
-if ($user && $user['clave'] === $password) { // Esta comparación debe ser con password_verify() si la contraseña está hasheada
-    // Iniciar sesión y establecer el rol
+if ($user && $user['clave'] === $password) { 
     $_SESSION['user'] = $user['id'];
     $_SESSION['role'] = $user['rol'];
 
