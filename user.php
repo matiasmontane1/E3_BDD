@@ -18,18 +18,11 @@ include('templates/header.html');
   <h1 class="title">Bananer</h1>
   <p class="description">Aquí podrás encontrar información sobre la universidad.</p>
 
-  <h2 class="subtitle">consulta cantidad de estudiantes vigentes</h2>
+  <h2 class="subtitle">Consulta cantidad de estudiantes vigentes</h2>
   <form class="form" action="consultas/consulta_estudiantes_nivel.php" method="post">
     <input class="form-button" type="submit" value="Buscar">
   </form>
 
-  <h2 class="subtitle">Consulta aprobacion curso periodo</h2>
-  <p class="prompt">Ingresa el largo del top de canciones:</p>
-  <form class="form" action="consultas/consulta_aprobacion_curso_periodo.php" method="post">
-    <input class="form-input" type="text" required placeholder="Ingresa el periodo" name="periodo" title="Debe ser en formato AÑO-SEMESTRE"> 
-    <br>
-    <input class="form-button" type="submit" value="Buscar">
-  </form>
 
   <h2 class="subtitle">Consulta promedio de porcentaje de aprobacion historico agrupado por profesor.</h2>
   <p class="prompt">Ingresa la sigla de un curso pra revisar el porcentaje de aprobacion historico.</p>
