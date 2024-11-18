@@ -4,36 +4,36 @@
     <?php
     require("../config/conexion.php");
 
-    // Obtener tablas y columnas válidas desde el esquema de la base de datos
-    function obtenerEsquema($db) {
-        $esquema = [];
+    function obtenerTiposColumnas($db, $tabla) {
+        $tipos = [];
         try {
-            $result = $db->query("SELECT TABLE_NAME, COLUMN_NAME 
-                                  FROM INFORMATION_SCHEMA.COLUMNS 
-                                  WHERE TABLE_SCHEMA = DATABASE()");
-            foreach ($result as $row) {
-                $tabla = $row['TABLE_NAME'];
-                $columna = $row['COLUMN_NAME'];
-                $esquema[$tabla][] = $columna;
+            $query = "SELECT column_name, data_type 
+                      FROM information_schema.columns 
+                      WHERE table_name = $1";
+            $result = pg_query_params($db, $query, [$tabla]);
+
+            if (!$result) {
+                throw new Exception("Error al obtener los tipos de las columnas: " . pg_last_error($db));
             }
-        } catch (PDOException $e) {
-            die("Error al obtener el esquema: " . $e->getMessage());
+
+            while ($row = pg_fetch_assoc($result)) {
+                $tipos[$row['column_name']] = $row['data_type'];
+            }
+        } catch (Exception $e) {
+            die($e->getMessage());
         }
-        return $esquema;
+        return $tipos;
     }
 
-    // Validar tabla y columnas contra el esquema
-    function validarTablaYColumnas($tabla, $atributos, $esquema) {
-        if (!isset($esquema[$tabla])) {
-            return false;
-        }
-        $atributosArray = explode(',', $atributos);
-        foreach ($atributosArray as $atributo) {
-            if (!in_array(trim($atributo), $esquema[$tabla])) {
-                return false;
+    function ajustarCondicionConCast($condicion, $tipos) {
+        foreach ($tipos as $columna => $tipo) {
+            if (strpos($condicion, $columna) !== false) {
+                if ($tipo === 'character varying' && preg_match('/\b' . $columna . '\s*[<>=!]+\s*\d+/', $condicion)) {
+                    $condicion = preg_replace('/\b' . $columna . '\b/', "$columna ~ '^\d+$' AND CAST($columna AS INTEGER)", $condicion);
+                }
             }
         }
-        return true;
+        return $condicion;
     }
 
     $atributos = $_POST["A"] ?? '';
@@ -43,23 +43,20 @@
     $datos = null;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $esquema = obtenerEsquema($db);
+        try {
+            $tiposColumnas = obtenerTiposColumnas($db, $tabla);
+            $condicionAjustada = ajustarCondicionConCast($condicion, $tiposColumnas);
 
-        // Validar entrada
-        if (empty($atributos) || empty($tabla) || empty($condicion)) {
-            $error = "Todos los campos son obligatorios.";
-        } elseif (!validarTablaYColumnas($tabla, $atributos, $esquema)) {
-            $error = "Tabla o columnas no válidas. Verifica los nombres ingresados.";
-        } else {
-            try {
-                // Construir y ejecutar la consulta
-                $consulta = "SELECT $atributos FROM $tabla WHERE $condicion";
-                $result = $db->prepare($consulta);
-                $result->execute();
-                $datos = $result->fetchAll();
-            } catch (PDOException $e) {
-                $error = "Error al ejecutar la consulta: " . htmlspecialchars($e->getMessage());
+            $consulta = "SELECT $atributos FROM $tabla WHERE $condicionAjustada";
+            $result = pg_query($db, $consulta);
+
+            if (!$result) {
+                throw new Exception("Error al ejecutar la consulta: " . pg_last_error($db));
             }
+
+            $datos = pg_fetch_all($result);
+        } catch (Exception $e) {
+            $error = $e->getMessage();
         }
     }
     ?>
