@@ -4,15 +4,23 @@
     <?php
         require("../config/conexion.php");
 
-        $query = $db->prepare("SELECT 
+        // Consulta SQL para PostgreSQL
+        $query = "SELECT 
             COUNT(CASE WHEN (2024 - CAST(SUBSTRING(cohorte FROM 1 FOR 4) AS INTEGER)) * 2 + (2 - CAST(SUBSTRING(cohorte FROM 6 FOR 2) AS INTEGER))|| '' = logro THEN 1 END) AS dentro,
             COUNT(CASE WHEN (2024 - CAST(SUBSTRING(cohorte FROM 1 FOR 4) AS INTEGER)) * 2 + (2 - CAST(SUBSTRING(cohorte FROM 6 FOR 2) AS INTEGER))|| '' != logro THEN 1 END) AS fuera
             FROM estudiantes
-            WHERE estudiantes.estamento = 'ESTUDIANTE VIGENTE';");
-        $query->execute();
-        
+            WHERE estudiantes.estamento = 'ESTUDIANTE VIGENTE';";
 
-        $resultado = $query -> fetch(PDO::FETCH_ASSOC); 
+        // Ejecutar la consulta usando pg_query
+        $result = pg_query($db, $query);
+
+        if (!$result) {
+            echo "Ocurrió un error con la consulta.\n";
+            exit;
+        }
+
+        // Obtener el resultado como un arreglo asociativo
+        $resultado = pg_fetch_assoc($result);
     ?>
 
     <table class="styled-table">

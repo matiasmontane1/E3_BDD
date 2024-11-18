@@ -5,15 +5,31 @@
 
         $codigoCurso = $_POST["Curso"];
 
-        $pregunta1 = $db -> prepare("SELECT COUNT(*) AS aprobados FROM historial_academico WHERE sigla = :Curso AND Calificacion IN ('SO', 'MB', 'B', 'SU');");
-        $pregunta1 -> bindParam(':Curso', $codigoCurso);
-        $pregunta1 -> execute();
-        $aprobados = $pregunta1 -> fetch(PDO::FETCH_ASSOC); 
+        // Consulta para obtener el número de aprobados
+        $queryAprobados = "SELECT COUNT(*) AS aprobados 
+                           FROM historial_academico 
+                           WHERE sigla = '$codigoCurso' AND Calificacion IN ('SO', 'MB', 'B', 'SU');";
+        $resultAprobados = pg_query($db, $queryAprobados);
 
-        $pregunta2 = $db -> prepare("SELECT COUNT(*) AS totales FROM historial_academico WHERE sigla = :Curso;");
-        $pregunta2 -> bindParam(':Curso', $codigoCurso);
-        $pregunta2 -> execute();
-        $totales = $pregunta2 -> fetch(PDO::FETCH_ASSOC); 
+        if (!$resultAprobados) {
+            echo "Error en la consulta de aprobados.\n";
+            exit;
+        }
+
+        $aprobados = pg_fetch_assoc($resultAprobados);
+
+        // Consulta para obtener el total de estudiantes
+        $queryTotales = "SELECT COUNT(*) AS totales 
+                         FROM historial_academico 
+                         WHERE sigla = '$codigoCurso';";
+        $resultTotales = pg_query($db, $queryTotales);
+
+        if (!$resultTotales) {
+            echo "Error en la consulta de totales.\n";
+            exit;
+        }
+
+        $totales = pg_fetch_assoc($resultTotales);
     ?>
 
     <table class="styled-table">
@@ -21,7 +37,7 @@
             <th>Promedio de Aprobación</th>
         </tr>
         <tr>
-            <td><?php echo round(($aprobados['aprobados']/$totales['totales'])*100) . "%"; ?></td> 
+            <td><?php echo round(($aprobados['aprobados'] / $totales['totales']) * 100) . "%"; ?></td> 
         </tr>
     </table>
 <body>
