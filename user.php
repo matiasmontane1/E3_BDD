@@ -25,7 +25,7 @@ include('templates/header.html');
 
 
   <h2 class="subtitle">Consulta promedio de porcentaje de aprobacion historico agrupado por profesor.</h2>
-  <p class="prompt">Ingresa la sigla de un curso pra revisar el porcentaje de aprobacion historico.</p>
+  <p class="prompt">Ingresa la sigla de un curso para revisar el porcentaje de aprobacion historico.</p>
   <form class="form" action="consultas/consulta_promedio_aprobacion_curso.php" method="post">
     <input class="form-input" type="text" required placeholder="Ingrese sigla de curso" name="Curso"> 
     <br>
