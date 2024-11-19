@@ -4,7 +4,7 @@
     <?php
     require("../config/conexion.php");
 
-    function obtenerTiposColumnas($db, $tabla) {
+    function tipos_de_columnas($db, $tabla) {
         $tipos = [];
         try {
             $query = "SELECT column_name, data_type 
@@ -25,7 +25,7 @@
         return $tipos;
     }
 
-    function ajustarCondicionConCast($condicion, $tipos) {
+    function revisar_condicion($condicion, $tipos) {
         foreach ($tipos as $columna => $tipo) {
             if (strpos($condicion, $columna) !== false) {
                 if ($tipo === 'character varying' && preg_match('/\b' . $columna . '\s*[<>=!]+\s*\d+/', $condicion)) {
@@ -44,10 +44,10 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
-            $tiposColumnas = obtenerTiposColumnas($db, $tabla);
-            $condicionAjustada = ajustarCondicionConCast($condicion, $tiposColumnas);
+            $tiposColumnas = tipos_de_columnas($db, $tabla);
+            $condicion_buena = revisar_condicion($condicion, $tiposColumnas);
 
-            $consulta = "SELECT $atributos FROM $tabla WHERE $condicionAjustada";
+            $consulta = "SELECT $atributos FROM $tabla WHERE $condicion_buena";
             $result = pg_query($db, $consulta);
 
             if (!$result) {
