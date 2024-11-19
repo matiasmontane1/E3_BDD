@@ -42,11 +42,11 @@ include('templates/header.html');
   <h2 class="subtitle">Consulta Personalizada de Base de Datos.</h2>
   <p class="prompt">Ingresa los atributos, la tabla y la condición para realizar tu consulta personalizada. (No te preocupes, validamos tu entrada para evitar errores).</p>
   <form class="form" action="consultas/select_atc.php" method="post">
-      <input class="form-input" type="text" required placeholder="Atributos (e.g., id, nombre)" name="A">
+      <input class="form-input" type="text" required placeholder="Atributos" name="A">
       <br>
-      <input class="form-input" type="text" required placeholder="Tabla (e.g., usuarios)" name="T">
+      <input class="form-input" type="text" required placeholder="Tabla" name="T">
       <br>
-      <input class="form-input" type="text" required placeholder="Condición (e.g., edad > 18)" name="C">
+      <input class="form-input" type="text" required placeholder="Condición" name="C">
       <br>
       <input class="form-button" type="submit" value="Consultar">
   </form>
