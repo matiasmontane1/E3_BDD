@@ -4,7 +4,7 @@
         require("../temp_notas/transaccion.php");
 
         
-        $query = "SELECT * FROM vista"; 
+        $query = "SELECT numero_alumno, asignatura, periodo, nombre_profe, nombre_alumno, nota_final FROM vista"; 
         $resultado = pg_query($db, $query);
 
         if (!$resultado) {

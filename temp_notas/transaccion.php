@@ -1,7 +1,7 @@
 <?php
 require('../config/conexion.php');
 
-// Leer datos de las notas
+
 $archivo_datos = fopen("../datos/notas_adivinacion I.csv", "r");
 $notas = [];
 $headers = fgets($archivo_datos);
@@ -23,11 +23,13 @@ try {
         asignatura VARCHAR(255),
         seccion INT,
         periodo VARCHAR(12),
-        oportunidad_dic VARCHAR(3),
-        oportunidad_mar VARCHAR(3),
+        oportunidad_dic FLOAT,
+        oportunidad_mar FLOAT,
         nombre_profe VARCHAR(100),
         nombre_alumno VARCHAR(100),
-        nota_final VARCHAR(3) 
+        nota_final FLOAT,
+        oportunidad VARCHAR(3),
+        calificacion VARCHAR(2) 
     );";
     pg_query($db, $crear_acta);
 
@@ -89,16 +91,26 @@ try {
             }
             else {
                 if ($o_mar == "" || is_null($o_mar)){
-                    $nota_final = "";
+                    $nota_final = 0;
                 }
                 else {
                     $nota_final = $o_mar;
                 }
             }
-            
-            if($error == FALSE){
-                $valores_acta = "INSERT INTO acta (numero_alumno, run, asignatura, seccion, periodo, oportunidad_dic, oportunidad_mar, nombre_profe, nombre_alumno, nota_final)
-                    VALUES ($numero_alumno, $run_a, '$curso', $seccion, '$periodo', '$o_dic', '$o_mar', '$nombre_profe', '$nombre_alumno', '$nota_final');";
+            $nota_final = (float)$nota_final;
+            if ($o_dic == 'NP' || $o_dic == 'P'){
+                $o_dic = 0.0;
+            }else{
+                $o_dic = (float)$o_dic;
+            }
+            if ($o_mar == ''){
+                $o_mar = 0.0;
+            }else{
+                $o_mar = (float)$o_mar;
+            }
+            if ($error == FALSE){
+                $valores_acta = "INSERT INTO acta (numero_alumno, run, asignatura, seccion, periodo, oportunidad_dic, oportunidad_mar, nombre_profe, nombre_alumno, nota_final, oportunidad, calificacion)
+                    VALUES ($numero_alumno, $run_a, '$curso', $seccion, '$periodo', $o_dic, $o_mar, '$nombre_profe', '$nombre_alumno', $nota_final, '', '');";
                 $insertar = pg_query($db, $valores_acta);
             }
             else {
@@ -108,6 +120,7 @@ try {
         }
         
     }
+
     $query = "SELECT crearvistaacta();";
     $result = pg_query($db, $query);
     pg_query($db, "COMMIT");
@@ -117,4 +130,19 @@ try {
     pg_query($db, "ROLLBACK");
     echo "Error: " . $e->getMessage();
 }
+$query = "SELECT COUNT(*) FROM historial_academico WHERE periodo_nota = '2024-02';";
+$resultado = pg_query($db, $query);
+
+if ($resultado) {
+    $cantidad = pg_fetch_result($resultado, 0);
+    if ($cantidad == 0) {
+        $transferencia = "
+        INSERT INTO historial_academico (numeroestudiante, sigla, periodo_nota, notafinal, calificacion, convocatoria)
+        SELECT numero_alumno, asignatura, periodo, nota_final, calificacion, oportunidad
+        FROM vista;";
+        pg_query($db, $transferencia);
+    }
+} 
+
+
 ?>

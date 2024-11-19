@@ -13,7 +13,14 @@ BEGIN
         periodo,
         nombre_alumno,
         nombre_profe,
-        nota_final
+        nota_final,
+        run,
+        seccion,
+        oportunidad_dic,
+        oportunidad_mar,
+        oportunidad,
+        calificacion
+
     FROM acta;
     
 END;
